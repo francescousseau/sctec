@@ -1,8 +1,11 @@
 # Mini-Projeto — Machine Learning e Visão Computacional
 
 > **Trilha:** Machine Learning e Visão Computacional — SCTEC/SENAI
+
 > **Módulo:** 1 — Semana 07
+
 > **Entrega:** Mini-Projeto Avaliativo
+
 > **Autor:** Francesco Cousseau
 
 ---

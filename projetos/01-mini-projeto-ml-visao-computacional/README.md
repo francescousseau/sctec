@@ -295,7 +295,7 @@ O pipeline desenvolvido neste projeto busca reduzir esses riscos ao padronizar c
 ## Autor
 
 **Francesco Cristiano Cousseau**
+
 AI & Data Science Consultant
-Faithful Data Solutions
 
 Projeto desenvolvido como entrega avaliativa do **Módulo 1 — Semana 07**, na trilha **Machine Learning e Visão Computacional — SCTEC/SENAI**.

@@ -1,4 +1,4 @@
-# 01-mini-projeto-ml-visao-computacional
+# 01 — Mini-Projeto: Machine Learning e Visão Computacional
 
 > **Trilha:** Machine Learning e Visão Computacional — SCTEC/SENAI
 
@@ -57,17 +57,18 @@ Esse tipo de tratamento é uma etapa essencial em pipelines de dados e Machine L
 01-mini-projeto-ml-visao-computacional/
 │
 ├── data/
-│   ├── olist_products_dataset.csv
-│   └── olist_orders_dataset.csv
+│   └── .gitkeep
 │
 ├── output/
-│   ├── olist_products_dataset_tratado.csv
-│   └── olist_orders_dataset_tratado.csv
+│   └── .gitkeep
 │
 ├── main.py
 ├── funcoes.py
 ├── .gitignore
 └── README.md
+
+As pastas data/ e output/ possuem arquivos .gitkeep apenas para que sejam mantidas no versionamento do Git.
+Os arquivos CSV de entrada e os arquivos tratados de saída não estão versionados no repositório.
 ```
 
 ---
@@ -100,10 +101,12 @@ cd sctec/projetos/01-mini-projeto-ml-visao-computacional
 
 ### 2. Verifique os arquivos de dados
 
-Os arquivos CSV devem estar dentro da pasta `data/` do mini-projeto:
+Os arquivos CSV não estão versionados neste repositório.
+
+Antes de executar o projeto, coloque os arquivos abaixo dentro da pasta data/ do mini-projeto:
 
 ```text
-data/
+ddata/
 ├── olist_products_dataset.csv
 └── olist_orders_dataset.csv
 ```

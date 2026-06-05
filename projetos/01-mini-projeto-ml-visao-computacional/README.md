@@ -1,4 +1,4 @@
-# Mini-Projeto — Machine Learning e Visão Computacional
+# 01-mini-projeto-ml-visao-computacional
 
 > **Trilha:** Machine Learning e Visão Computacional — SCTEC/SENAI
 
@@ -100,7 +100,7 @@ cd sctec/projetos/01-mini-projeto-ml-visao-computacional
 
 ### 2. Verifique os arquivos de dados
 
-Os arquivos CSV devem estar dentro da pasta `data/`:
+Os arquivos CSV devem estar dentro da pasta `data/` do mini-projeto:
 
 ```text
 data/
@@ -242,11 +242,11 @@ Ao final do processamento, o script exibe no terminal um sumário com:
 | Biblioteca | Uso                                                               |
 | ---------- | ----------------------------------------------------------------- |
 | `csv`      | Leitura e escrita de arquivos CSV com `DictReader` e `DictWriter` |
-| `re`       | Limpeza de strings com Expressões Regulares                       |
+| `re`       | Expressões Regulares para limpeza de strings                      |
 | `datetime` | Conversão e formatação de datas                                   |
-| `pathlib`  | Manipulação de caminhos de arquivos de forma multiplataforma      |
+| `pathlib`  | Manipulação de caminhos de arquivos                               |
 
-> O uso da biblioteca `pandas` não foi utilizado nesta entrega, conforme as regras do desafio.
+> A biblioteca `pandas` não foi utilizada nesta entrega, conforme as regras do desafio.
 
 ---
 
@@ -294,8 +294,8 @@ O pipeline desenvolvido neste projeto busca reduzir esses riscos ao padronizar c
 
 ## Autor
 
-**Francesco Cousseau**
+**Francesco Cristiano Cousseau**
 AI & Data Science Consultant
 Faithful Data Solutions
 
-Projeto desenvolvido como entrega avaliativa do **Módulo 1 — Mini-Projeto**, na trilha **Machine Learning e Visão Computacional — SCTEC/SENAI**.
+Projeto desenvolvido como entrega avaliativa do **Módulo 1 — Semana 07**, na trilha **Machine Learning e Visão Computacional — SCTEC/SENAI**.

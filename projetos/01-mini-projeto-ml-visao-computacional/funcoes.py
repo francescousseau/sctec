@@ -8,7 +8,7 @@ def limpar_categoria(categoria):
     Limpa e padroniza o nome da categoria do produto.
 
     Regras:
-    - Se estiver vazia, retorna 'sem categoria';
+    - Se estiver vazia ou nula, retorna 'Sem Categoria';
     - Remove espaços excedentes;
     - Converte para letras minúsculas;
     - Remove caracteres especiais indevidos com regex.
@@ -163,13 +163,19 @@ def processar_pedidos(caminho_entrada, caminho_saida):
                 if status == "canceled":
                     total_cancelados += 1
 
-                if data_entrega == "":
+                # Separa os registros conforme a presença da data de entrega
+                # e o status do pedido, usando if / elif / else.
+                if data_entrega != "":
+                    # Entrega com data registrada: não entra na análise de ausências.
+                    pass
+                elif status == "canceled":
+                    # Data ausente em pedido cancelado (esperado pela hipótese).
                     entregas_ausentes += 1
-
-                    if status == "canceled":
-                        entregas_ausentes_canceladas += 1
-                    else:
-                        entregas_ausentes_nao_canceladas += 1
+                    entregas_ausentes_canceladas += 1
+                else:
+                    # Data ausente em pedido NÃO cancelado (refuta a hipótese).
+                    entregas_ausentes += 1
+                    entregas_ausentes_nao_canceladas += 1
 
                 data_convertida = converter_data_brasileira(linha.get("order_approved_at"))
                 linha[nova_coluna] = data_convertida

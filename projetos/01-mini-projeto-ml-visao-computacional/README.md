@@ -106,7 +106,7 @@ Os arquivos CSV não estão versionados neste repositório.
 Antes de executar o projeto, coloque os arquivos abaixo dentro da pasta data/ do mini-projeto:
 
 ```text
-ddata/
+data/
 ├── olist_products_dataset.csv
 └── olist_orders_dataset.csv
 ```

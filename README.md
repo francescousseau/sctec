@@ -45,25 +45,36 @@ A proposta é demonstrar evolução técnica em:
 ## Projetos
 
 | Nº | Projeto | Status | Principais Tópicos |
-|---|---|---|---|
-| 01 | Mini-Projeto — ML e Visão Computacional | Em desenvolvimento | Python, CSV, Regex, Datetime, ETL, limpeza de dados |
-| 02 | Projeto 02 | Planejado | A definir |
+| 01 | [Mini-Projeto — ML e Visão Computacional](projetos/01-mini-projeto-ml-visao-computacional/) | Concluído | Python, CSV, Regex, Datetime, ETL, limpeza de dados |
+| 02 | [Pipeline Preditivo para Análise de Risco de Crédito](projetos/02-projeto-avaliativo-risco-credito/) | Concluído | KNN, Árvore de Decisão, prevenção de data leakage, diagnóstico de overfitting, análise de custo de erros |
 | 03 | Projeto 03 | Planejado | A definir |
+
+### 🔍 Destaque — Projeto 02: Risco de Crédito
+
+Pipeline completo de classificação binária comparando **KNN** e **Árvore de Decisão**,
+com foco em três eixos: prevenção de vazamento de dados, diagnóstico analítico de
+overfitting e **tradução dos erros do modelo em impacto financeiro**.
+
+O achado central é contraintuitivo: o KNN tem **melhor recall** e captura mais
+inadimplentes — mas rejeita 592 bons pagadores a mais e, no somatório,
+custa **R$ 1 milhão a mais** que a árvore.
+
+Nenhuma métrica isolada decide um caso de negócio.
 
 ## Estrutura do Repositório
 
 ```text
 sctec/
 ├── README.md
+├── LICENSE
 ├── .gitignore
 ├── projetos/
 │   ├── 01-mini-projeto-ml-visao-computacional/
-│   │   ├── README.md
-│   │   ├── main.py
-│   │   ├── funcoes.py
-│   │   ├── data/
-│   │   └── output/
-│   ├── 02-projeto-em-breve/
-│   └── 03-projeto-em-breve/
-└── docs/
-    └── planejamento.md
+│   └── 02-projeto-avaliativo-risco-credito/
+│       ├── README.md          # dicionário de dados + resumo executivo
+│       ├── notebooks/         # pipeline completo, executado
+│       ├── src/               # módulos: preprocessing, modeling, evaluation
+│       ├── data/
+│       ├── reports/           # figuras e tabelas de resultado
+│       └── docs/              # decisões técnicas, guia de git
+└── requirements.txt

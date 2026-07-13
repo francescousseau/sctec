@@ -18,7 +18,13 @@ from .data_quality import (
     validate_business_rules,
 )
 from .evaluation import BusinessCost, confusion_counts, plot_confusion_matrices
-from .modeling import make_cv, prove_scale_invariance, run_grid, select_best
+from .modeling import (
+    make_cv,
+    out_of_fold_proba,
+    prove_scale_invariance,
+    run_grid,
+    select_best,
+)
 from .preprocessing import (
     RateByGradeImputer,
     Winsorizer,
@@ -34,7 +40,7 @@ __all__ = [
     "load_data", "build_quality_report", "validate_business_rules", "clean_basic_data",
     "add_income_commitment", "drop_redundant_feature",
     "RateByGradeImputer", "Winsorizer", "build_preprocessor", "build_pipeline",
-    "run_grid", "select_best", "prove_scale_invariance", "make_cv",
+    "run_grid", "select_best", "prove_scale_invariance", "make_cv", "out_of_fold_proba",
     "BusinessCost", "plot_confusion_matrices", "confusion_counts",
 ]
 

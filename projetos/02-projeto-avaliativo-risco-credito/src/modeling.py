@@ -22,7 +22,11 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 from sklearn.metrics import f1_score
-from sklearn.model_selection import StratifiedKFold, cross_val_score
+from sklearn.model_selection import (
+    StratifiedKFold,
+    cross_val_predict,
+    cross_validate,
+)
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 
@@ -71,12 +75,22 @@ def evaluate_config(
     winsorizar: bool,
     cv: StratifiedKFold | None = None,
 ) -> ModelResult:
-    """Avalia UMA configuração por CV, sem jamais tocar o conjunto de teste."""
+    """Avalia UMA configuração por CV, sem jamais tocar o conjunto de teste.
+
+    Usa `cross_validate` com múltiplas métricas numa única passada. Duas chamadas
+    separadas a `cross_val_score` (uma para F1, outra para recall) treinariam os
+    mesmos 5 folds duas vezes — o dobro do custo para o mesmo resultado.
+    """
     cv = cv or make_cv()
     pipe = build_pipeline(estimator, escalonar=escalonar, winsorizar=winsorizar)
 
-    f1_cv = cross_val_score(pipe, X_train, y_train, cv=cv, scoring="f1").mean()
-    recall_cv = cross_val_score(pipe, X_train, y_train, cv=cv, scoring="recall").mean()
+    scores = cross_validate(
+        pipe, X_train, y_train, cv=cv,
+        scoring={"f1": "f1", "recall": "recall"},
+        n_jobs=-1,
+    )
+    f1_cv = scores["test_f1"].mean()
+    recall_cv = scores["test_recall"].mean()
 
     pipe.fit(X_train, y_train)
     f1_train = f1_score(y_train, pipe.predict(X_train))  # treino REAL, não balanceado
@@ -87,12 +101,19 @@ def evaluate_config(
 def run_grid(
     X_train,
     y_train,
-    ks: list[int] = [3, 5, 7, 9],
-    depths: list = [3, 5, 7, None],
+    ks: list[int] | None = None,
+    depths: list | None = None,
     cv: StratifiedKFold | None = None,
 ) -> pd.DataFrame:
-    """Roda o grid obrigatório: 4 valores de K e 4 de max_depth."""
+    """Roda o grid obrigatório: 4 valores de K e 4 de max_depth.
+
+    `ks` e `depths` são `None` por padrão, e não listas literais: um argumento
+    mutável como default é avaliado UMA vez, na definição da função, e passa a
+    ser compartilhado entre todas as chamadas.
+    """
     cv = cv or make_cv()
+    ks = ks or [3, 5, 7, 9]
+    depths = depths or [3, 5, 7, None]
     resultados: list[ModelResult] = []
 
     for k in ks:
@@ -154,3 +175,24 @@ def prove_scale_invariance(X_train, y_train, X_test, max_depth: int = 5) -> floa
     ).fit(X_train, y_train).predict(X_test)
 
     return float(np.mean(sem == com))
+
+
+def out_of_fold_proba(estimator, X_train, y_train, escalonar: bool,
+                      winsorizar: bool, cv: StratifiedKFold | None = None) -> np.ndarray:
+    """Probabilidades out-of-fold para o conjunto de TREINO.
+
+    Cada observação recebe a probabilidade prevista por um modelo que NÃO a viu
+    durante o treinamento — é o fold em que ela era validação. O resultado é uma
+    estimativa honesta da probabilidade "fora da amostra", obtida sem gastar um
+    único registro do conjunto de teste.
+
+    Serve para calibrar decisões que dependem da probabilidade — notadamente a
+    escolha do threshold (ver `evaluation.BusinessCost.threshold_from_oof`).
+    Escolher o threshold contra `y_test` seria *selection leakage*: o mesmo erro
+    que a seleção de hiperparâmetros pelo teste comete.
+    """
+    cv = cv or make_cv()
+    pipe = build_pipeline(estimator, escalonar=escalonar, winsorizar=winsorizar)
+    return cross_val_predict(
+        pipe, X_train, y_train, cv=cv, method="predict_proba", n_jobs=-1
+    )[:, 1]

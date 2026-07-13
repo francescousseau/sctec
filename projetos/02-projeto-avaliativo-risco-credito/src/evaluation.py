@@ -26,7 +26,12 @@ class BusinessCost:
 
     Falso Positivo (negou crédito a quem pagaria):
         perda = loan_amnt * taxa_juros * duracao
-        O banco perde a MARGEM, não o capital.
+        O banco perde a RECEITA DE JUROS, não o capital.
+
+    TERMINOLOGIA: esta fórmula estima a *receita bruta de juros não realizada*,
+    e não a margem líquida. Ela NÃO desconta custo de captação, custo de capital,
+    custo operacional, amortização do principal, perda esperada nem impostos. É
+    uma proxy simplificada, deliberadamente conservadora quanto ao custo do FP.
 
     Ambos são HIPÓTESES DECLARADAS — por isso `sensitivity_analysis` existe.
     """
@@ -58,7 +63,7 @@ class BusinessCost:
         return {
             "FP": int(mask_fp.sum()),
             "FN": int(mask_fn.sum()),
-            "custo_FP (margem perdida)": custo_fp,
+            "custo_FP (receita de juros não realizada)": custo_fp,
             "custo_FN (calote)": custo_fn,
             "CUSTO TOTAL": custo_fp + custo_fn,
         }
@@ -75,10 +80,56 @@ class BusinessCost:
 
         O corte de 0.5 não é sagrado: ele é o ótimo apenas quando FP e FN custam
         a mesma coisa — o que quase nunca é verdade em crédito.
+
+        ATENÇÃO: este método é agnóstico quanto ao conjunto que recebe. Aplicá-lo
+        sobre `y_test` para ESCOLHER o threshold é *selection leakage* — o mesmo
+        erro de escolher hiperparâmetro olhando o teste. Para escolher, use
+        `threshold_from_oof`, que aprende no treino. Este método serve para (a)
+        alimentar aquele, e (b) diagnosticar, ao final, quanto o threshold vazado
+        teria sido otimista.
         """
         grid = np.arange(0.05, 0.96, 0.01) if grid is None else grid
         custos = [self.compute(y_true, (y_proba >= t).astype(int))["CUSTO TOTAL"] for t in grid]
         return float(grid[int(np.argmin(custos))]), custos, grid
+
+
+    def threshold_from_oof(
+        self,
+        y_train,
+        proba_oof,
+        loan_amnt_train,
+        loan_int_rate_train,
+        grid=None,
+    ) -> float:
+        """Aprende o threshold ótimo no TREINO, via probabilidades out-of-fold.
+
+        Esta é a forma honesta de escolher o corte de decisão. As probabilidades
+        vêm de `modeling.out_of_fold_proba`: cada observação do treino recebe a
+        probabilidade prevista pelo fold que NÃO a viu. Minimizamos o custo sobre
+        elas, fixamos o threshold, e só então o aplicamos ao teste — uma vez.
+
+        Escolher o threshold varrendo `y_test` produziria um número otimista, e
+        contradiria o princípio que rege a seleção de hiperparâmetros neste
+        projeto: o holdout é aberto uma vez, para medir — nunca para escolher.
+        """
+        import numpy as _np
+
+        grid = _np.arange(0.05, 0.96, 0.01) if grid is None else grid
+
+        valores = _np.asarray(loan_amnt_train, dtype=float)
+        taxas = pd.Series(loan_int_rate_train, dtype=float)
+        taxas = (taxas.fillna(taxas.median()).to_numpy()) / 100
+        y_train = _np.asarray(y_train)
+
+        def _custo(y_pred):
+            fp = (y_train == 0) & (y_pred == 1)
+            fn = (y_train == 1) & (y_pred == 0)
+            return (valores[fp] * taxas[fp] * self.duracao).sum() + (
+                valores[fn] * self.lgd
+            ).sum()
+
+        custos = [_custo((proba_oof >= t).astype(int)) for t in grid]
+        return float(grid[int(_np.argmin(custos))])
 
     def plot_threshold_curve(self, y_true, probas: dict, output_path=None) -> None:
         plt.figure(figsize=(9, 5))

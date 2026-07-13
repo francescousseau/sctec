@@ -44,10 +44,12 @@ A proposta é demonstrar evolução técnica em:
 
 ## Projetos
 
-| Nº | Projeto | Status | Principais Tópicos |
-| 01 | [Mini-Projeto — ML e Visão Computacional](projetos/01-mini-projeto-ml-visao-computacional/) | Concluído | Python, CSV, Regex, Datetime, ETL, limpeza de dados |
-| 02 | [Pipeline Preditivo para Análise de Risco de Crédito](projetos/02-projeto-avaliativo-risco-credito/) | Concluído | KNN, Árvore de Decisão, prevenção de data leakage, diagnóstico de overfitting, análise de custo de erros |
-| 03 | Projeto 03 | Planejado | A definir |
+| Nº | Projeto                                             | Status             | Principais Tópicos                                                                                        |
+| -: | --------------------------------------------------- | ------------------ | --------------------------------------------------------------------------------------------------------- |
+| 01 | Mini-Projeto — ML e Visão Computacional             | Concluído          | Python, CSV, Regex, Datetime, ETL e limpeza de dados                                                      |
+| 02 | Pipeline Preditivo para Análise de Risco de Crédito | Concluído | KNN, Árvore de Decisão, prevenção de data leakage, diagnóstico de overfitting e análise de custo de erros |
+| 03 | Projeto 03                                          | Planejado          | A definir                                                                                                 |
+
 
 ### 🔍 Destaque — Projeto 02: Risco de Crédito
 

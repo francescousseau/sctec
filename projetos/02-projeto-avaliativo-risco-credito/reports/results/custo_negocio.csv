@@ -1,0 +1,4 @@
+modelo,FP,FN,custo_FP (margem perdida),custo_FN (calote),CUSTO TOTAL
+KNN (k=9),821,308,2166961.61,1683630.0,3850591.61
+Árvore (depth=7),229,374,595537.81,2222788.75,2818326.56
+Baseline: aprovar todos,0,1418,0.0,9930163.75,9930163.75

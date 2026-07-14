@@ -98,9 +98,29 @@ Desempenho no conjunto de teste (6.483 clientes nunca vistos pelo modelo):
 
 **Recomendações operacionais:**
 
-1. **Ajustar o threshold de decisão de 0,50 para ≈ 0,77** → custo cai para **R$ 2.711.511** (mais R$ 107 mil economizados sem trocar uma linha do modelo).
+1. **Ajustar o threshold de decisão de 0,50 para 0,69** → custo cai para **R$ 2.726.060** (cerca de R$ 89 mil economizados sem trocar uma linha do modelo). O corte foi aprendido com probabilidades *out-of-fold* do conjunto de treino — **nunca contra o teste**, o que seria selection leakage.
 2. **Manter a árvore também por governança.** Ela é auditável: cada negativa pode ser explicada ao cliente e ao regulador em linguagem natural ("grade E + 45% da renda comprometida"). O KNN não oferece isso — e em crédito a explicabilidade é exigência regulatória, não luxo.
 3. **Usar o modelo como triagem, não como juiz.** Casos de fronteira (probabilidade entre 0,4 e 0,7) devem ir para análise humana.
+
+---
+
+## ⚠️ Disponibilidade temporal das variáveis (risco de *availability leakage*)
+
+Uma ressalva que precede qualquer leitura dos resultados.
+
+**`loan_grade` é o rating de risco atribuído pela própria instituição ao contrato**, e `loan_int_rate` deriva dele. Se essas duas variáveis forem produzidas *durante* a análise de crédito — e não antes dela —, o modelo não está prevendo inadimplência de forma independente: está reaproveitando a avaliação de risco que o banco **já fez**.
+
+Isso não é um detalhe menor. `loan_grade` é a **variável mais importante do modelo** (≈33% da importância), e `loan_int_rate` é função dela. Boa parte do desempenho observado pode ser um reflexo da qualidade do processo de rating existente, não da capacidade preditiva do modelo.
+
+**Hipótese assumida neste projeto:** ambas estão disponíveis antes da decisão final de concessão. É a leitura mais natural do dataset público, mas é uma **hipótese, não um fato verificado**.
+
+**O que uma implantação real exigiria:**
+
+1. Validar, contra o fluxo operacional da instituição, em que momento cada variável é gerada.
+2. Se forem posteriores à aprovação, **removê-las e retreinar** — o modelo atual seria inutilizável.
+3. Idealmente, treinar **dois cenários**: um completo (com grade e taxa) e um de **pré-aprovação** (sem elas), para saber quanto o modelo realmente agrega antes de o bureau opinar.
+
+Este projeto entrega apenas o cenário completo. O de pré-aprovação está nos próximos passos.
 
 ---
 
@@ -111,7 +131,7 @@ O custo **não** usa valores fixos arbitrários: errar num empréstimo de R$ 35 
 | Erro | Fórmula | Premissa |
 |---|---|---|
 | Falso Negativo | `loan_amnt × LGD` | **LGD (Loss Given Default) = 65%** — parte do principal é recuperada via cobrança |
-| Falso Positivo | `loan_amnt × taxa_juros × duração` | **Duração média = 2 anos**; representa a margem de juros que o banco deixou de ganhar |
+| Falso Positivo | `loan_amnt × taxa_juros × duração` | **Duração média = 2 anos**. Representa a **receita bruta de juros não realizada** — *não* a margem líquida: não desconta custo de captação, custo de capital, custo operacional, amortização, perda esperada nem impostos. É uma proxy simplificada e conservadora. |
 
 Ambas são **hipóteses declaradas**, por isso o projeto inclui uma **análise de sensibilidade** variando o LGD.
 
@@ -169,10 +189,12 @@ Ambas são **hipóteses declaradas**, por isso o projeto inclui uma **análise d
 
 ## 7. Como executar
 
+> **Python 3.11** (fixado em `.python-version`)
+
 ### 1. Criar o ambiente
 
 ```bash
-python -m venv .venv
+python3.11 -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
 ```
 

@@ -191,7 +191,9 @@ Custos fixos e arbitrários (FP = R$ 500, FN = R$ 5.000) escondem o fato de que 
 | Erro | Fórmula | Premissa |
 |---|---|---|
 | **Falso Negativo** | `loan_amnt × LGD` | **LGD = 65%** — o banco perde o **principal**; parte é recuperada via cobrança |
-| **Falso Positivo** | `loan_amnt × taxa × duração` | **Duração = 2 anos** — o banco perde a **margem**, não o capital |
+| **Falso Positivo** | `loan_amnt × taxa × duração` | **Duração = 2 anos** — o banco perde a **receita de juros**, não o capital |
+
+**Nota de terminologia.** A fórmula do FP estima a **receita bruta de juros não realizada**, e não a *margem líquida*. Ela não desconta custo de captação, custo de capital, custo operacional, amortização do principal, perda esperada nem impostos. É uma proxy simplificada — e conservadora, já que superestima o custo de rejeitar um bom pagador.
 
 Ambas são **hipóteses declaradas**. Por isso existe a análise de sensibilidade (§13).
 
@@ -228,18 +230,29 @@ Mas, para conseguir isso, **barra 592 bons pagadores a mais** — cada um deles 
 
 ---
 
-## 15. Otimização de threshold
+## 15. Otimização de threshold — aprendida no treino, não no teste
 
 O corte de 0,50 é ótimo **apenas quando FP e FN custam a mesma coisa** — o que quase nunca é verdade em crédito.
 
-Varrendo o threshold e minimizando o custo:
+### A armadilha que este projeto quase caiu
 
-| Modelo | t* | Custo | Ganho |
-|---|---|---|---|
-| Árvore | **0,77** | R$ 2.711.511 | **R$ 106.816** |
-| KNN | 0,56 | R$ 3.512.780 | R$ 337.812 |
+Varrer os thresholds contra `y_test` e escolher o que minimiza o custo **é selection leakage**. É exatamente o erro do §10, cometido num lugar diferente: o holdout deixa de medir e passa a decidir. O número resultante é otimista, porque o corte foi ajustado ao ruído daquela amostra específica.
 
-**R$ 107 mil economizados sem trocar uma linha do modelo** — apenas movendo o corte de decisão.
+### A correção
+
+O threshold é aprendido com **probabilidades out-of-fold do treino** (`modeling.out_of_fold_proba`): cada observação recebe a probabilidade prevista pelo fold que **não a viu**. Minimizamos o custo sobre elas, fixamos o corte, e só então o aplicamos ao teste — **uma vez, sem reajuste**.
+
+| Threshold | Origem | Custo no teste |
+|---|---|---|
+| 0,50 | padrão | R$ 2.815.557 |
+| **0,69** | **out-of-fold no treino (honesto)** | **R$ 2.726.060** |
+| 0,77 | otimizado no teste (vazado) | R$ 2.711.511 |
+
+**Ganho honesto: R$ 89.497**, sem trocar uma linha do modelo.
+
+### Quanto o vazamento teria custado em credibilidade
+
+O threshold vazado prometeria R$ 2.711.511 — **R$ 14.549 a menos (0,53%)**. O otimismo é pequeno e a conclusão sobrevive intacta. Mas a magnitude do erro não é o ponto: **o método é.** Um pipeline que prega "o teste é aberto uma vez" e depois ajusta o corte de decisão contra ele se contradiz. O teste mede; não escolhe.
 
 ---
 
@@ -253,3 +266,28 @@ Nada disto foi feito neste projeto, e **é honesto dizer**:
 - **Calibração de probabilidades.** A otimização de threshold pressupõe probabilidades calibradas — árvores raramente as fornecem.
 - **Monitoramento de drift.** O perfil dos solicitantes muda; o modelo, não.
 - **Governança e conformidade regulatória.** Em crédito, a explicabilidade não é luxo: é exigência legal.
+
+
+---
+
+## 17. Disponibilidade temporal das variáveis — o risco mais sério do projeto
+
+Uma ressalva que, se confirmada, invalidaria boa parte dos resultados.
+
+**`loan_grade` é o rating de risco que a própria instituição atribui ao contrato.** `loan_int_rate` deriva dele. Se forem gerados *durante* a análise de crédito, o modelo não prevê inadimplência de forma independente — ele **reaproveita a avaliação de risco que o banco já fez**.
+
+Isso não é hipotético: `loan_grade` é a **variável #1 do modelo** (≈33% da importância), e a taxa de juros é função dela. Boa parte do desempenho observado pode refletir a qualidade do processo de rating existente, não a capacidade preditiva do modelo.
+
+### O que foi assumido
+
+Que ambas estão disponíveis **antes** da decisão final de concessão. É a leitura mais natural do dataset público — mas é **hipótese, não fato verificado**.
+
+### O que uma implantação real exigiria
+
+1. **Validar o fluxo operacional:** em que momento exato cada variável é produzida?
+2. **Se forem posteriores à aprovação:** removê-las e retreinar. O modelo atual seria inutilizável em produção.
+3. **Treinar dois cenários:**
+   - **completo** — com `loan_grade` e `loan_int_rate` (o que este projeto entrega);
+   - **pré-aprovação** — sem elas, medindo quanto o modelo agrega *antes* de o bureau opinar.
+
+O cenário de pré-aprovação está nos próximos passos. Declará-lo como limitação é mais honesto do que executá-lo às pressas.

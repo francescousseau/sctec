@@ -189,12 +189,12 @@ Ambas são **hipóteses declaradas**, por isso o projeto inclui uma **análise d
 
 ## 7. Como executar
 
-> **Python 3.11** (fixado em `.python-version`)
+> **Python 3.12** (fixado em `.python-version`)
 
 ### 1. Criar o ambiente
 
 ```bash
-python3.11 -m venv .venv
+python3.12 -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
 ```
 

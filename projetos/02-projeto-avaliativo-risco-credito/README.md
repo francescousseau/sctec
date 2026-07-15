@@ -184,7 +184,12 @@ Ambas são **hipóteses declaradas**, por isso o projeto inclui uma **análise d
     ├── guia-git.md
     └── decisoes-tecnicas.md
 ```
-
+> **Nota sobre versionamento de dados.** O `credit_risk_dataset.csv` é versionado
+> por ser público, pequeno (1,8 MB) e para garantir reprodutibilidade imediata ao
+> clonar o repositório. Em um contexto de produção, dados ficariam **fora do Git**
+> — em object storage (S3/GCS) ou sob DVC — e o repositório versionaria apenas o
+> código e um manifesto de acesso à base. A escolha aqui prioriza a avaliação
+> reproduzível sobre a convenção de produção.
 ---
 
 ## 7. Como executar

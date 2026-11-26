@@ -4,6 +4,18 @@ Este repositório reúne projetos práticos desenvolvidos durante minha jornada 
 
 O objetivo é organizar, documentar e versionar projetos relacionados a **Ciência de Dados, Machine Learning, Visão Computacional, IA Generativa, ChatBots, Agentes de IA e Engenharia de IA**, construindo um portfólio técnico progressivo e profissional.
 
+## English summary
+
+Practical projects from the **SCTEC/SENAI Machine Learning and Computer Vision** track (Brazil). The documentation is in Portuguese; each project README has an English summary.
+
+| # | Project | Status |
+|--:|---|---|
+| 01 | Pure-Python ETL and cleaning of Olist e-commerce CSV files | Completed |
+| 02 | Predictive credit-risk pipeline: KNN vs. decision tree, leakage prevention, overfitting diagnosis and cost-of-error analysis | Completed |
+| 03 | To be defined | Planned |
+
+Highlight (Project 02): KNN has the better recall, but it rejects 592 more good payers and costs about R$ 1 million more than the decision tree on the test set. No single metric decides a business case.
+
 ## Sobre a Trilha
 
 A formação SCTEC/SENAI em **Machine Learning e Visão Computacional** aborda fundamentos e aplicações práticas de Inteligência Artificial, incluindo:

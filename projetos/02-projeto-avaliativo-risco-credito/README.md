@@ -4,6 +4,22 @@ Projeto avaliativo da trilha **Machine Learning e Visão Computacional — SCTEC
 
 ---
 
+## English summary
+
+**Problem.** Before granting a loan, decide whether the customer will default. A false negative (granting credit to a defaulter) and a false positive (denying a good payer) have opposite economic costs.
+
+**Approach.** Binary classification on a public dataset of 32,581 loans (12 columns, 78.2% non-default / 21.8% default). KNN and a decision tree are compared by F1 and recall on the default class, then judged by financial cost.
+
+**Engineering.** Data-quality rules applied before the split, all preprocessing inside a scikit-learn/imbalanced-learn `Pipeline`, hyperparameters chosen by cross-validation on the training set, test set opened once, threshold learned from out-of-fold probabilities, random under-sampling instead of SMOTE.
+
+**Results (test set, 6,483 customers).** Decision tree (`max_depth=7`): F1 0.776, PR-AUC 0.823, total error cost R$ 2,818,327. KNN (k=9): F1 0.663, PR-AUC 0.750, cost R$ 3,850,592, although its recall is higher (0.783 vs. 0.736). Moving the threshold from 0.50 to 0.69 lowers the tree's cost to R$ 2,726,060.
+
+**Limitations (stated in the project).** Public and possibly synthetic data; LGD (65%) and average duration (2 years) are assumptions; no out-of-time validation; no fairness audit; `loan_grade` may carry information produced by the lender's own risk assessment (availability leakage), so the model must not be used in production as it stands.
+
+*The full documentation below is in Portuguese.*
+
+---
+
 ## 1. Problema de negócio
 
 Uma instituição financeira precisa decidir, **antes de liberar o crédito**, se um cliente honrará o empréstimo. O modelo prevê a variável `loan_status`:

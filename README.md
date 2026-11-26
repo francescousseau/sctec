@@ -81,3 +81,4 @@ sctec/
 │       ├── reports/           # figuras e tabelas de resultado
 │       ├── docs/              # decisões técnicas, guia de git
 │       └── requirements.txt   # dependências do projeto
+```

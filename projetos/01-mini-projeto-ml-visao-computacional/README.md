@@ -10,6 +10,14 @@
 
 ---
 
+## English summary
+
+A data-sanitization pipeline for an e-commerce scenario using the public Olist `products` and `orders` CSV files, built only with the Python standard library (`csv`, `re`, `datetime`). It fills or flags missing categories and physical dimensions, normalizes category names, validates business rules for cancelled orders and missing delivery dates, converts dates to the Brazilian format and prints a manual statistics report. The CSV inputs and outputs are not versioned.
+
+*The full documentation below is in Portuguese.*
+
+---
+
 ## Descrição do Projeto
 
 Este projeto foi desenvolvido como parte da trilha **Machine Learning e Visão Computacional — SCTEC/SENAI**.

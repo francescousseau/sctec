@@ -79,5 +79,6 @@ sctec/
 │       ├── src/               # módulos: preprocessing, modeling, evaluation
 │       ├── data/
 │       ├── reports/           # figuras e tabelas de resultado
-│       └── docs/              # decisões técnicas, guia de git
-└── requirements.txt
+│       ├── docs/              # decisões técnicas, guia de git
+│       └── requirements.txt   # dependências do projeto
+```

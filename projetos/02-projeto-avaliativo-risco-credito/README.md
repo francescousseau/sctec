@@ -135,6 +135,8 @@ O custo **não** usa valores fixos arbitrários: errar num empréstimo de R$ 35 
 
 Ambas são **hipóteses declaradas**, por isso o projeto inclui uma **análise de sensibilidade** variando o LGD.
 
+> **Nota sobre a unidade monetária.** O dicionário de dados descreve renda e valor do empréstimo em **US$** (base pública original), enquanto os custos deste relatório aparecem com o símbolo **R$**. Os valores são calculados diretamente sobre os montantes do dataset, **sem conversão cambial**; leia-os como uma unidade monetária genérica. Esta nota registra a inconsistência de rótulo sem alterar nenhum resultado; a convenção final (US$ ou R$) deve ser definida pelo autor.
+
 ---
 
 ## 5. Decisões técnicas — e por quê
